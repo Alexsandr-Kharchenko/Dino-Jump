@@ -8,30 +8,28 @@ body {
   background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
   color: #fff;
   overflow: hidden;
-  height: 100vh;
-
-  /* Фон зі зірками на весь екран */
+  min-height: 100vh;
   position: relative;
 }
 
 body::before {
   content: "";
-  position: fixed; /* на весь екран, не залежно від прокрутки */
+  position: fixed;
   width: 100%;
   height: 100%;
   background: url("assets/Star.png") repeat;
   background-size: cover;
   top: 0;
   left: 0;
-  z-index: 0; /* позаду всіх елементів */
+  z-index: 0;
   opacity: 0.3;
   pointer-events: none;
 }
 
 /* Заголовок */
 h1 {
-  margin-top: 30px;
-  font-size: 3rem;
+  margin-top: 20px;
+  font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
   background: linear-gradient(90deg, #ffeb3b, #ff9800, #f44336);
@@ -42,6 +40,12 @@ h1 {
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   z-index: 10;
   position: relative;
+}
+
+h1 .logo {
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
 }
 
 /* Інструкції та рахунок */
@@ -55,8 +59,9 @@ p {
 /* Контейнер гри */
 #game {
   position: relative;
-  width: 800px;
-  height: 300px;
+  width: 90%;
+  max-width: 1000px;
+  aspect-ratio: 16/6;
   overflow: hidden;
   border-radius: 15px;
   background: rgba(0, 0, 0, 0.6);
@@ -64,17 +69,17 @@ p {
   margin-top: 20px;
   border: 2px solid #ffeb3b;
   backdrop-filter: blur(5px);
-  z-index: 10; /* над фоном, але під Pacman */
+  z-index: 10;
 }
 
 /* Pacman */
 #pacman {
   position: absolute;
   bottom: 0;
-  left: 60px;
-  width: 50px;
-  height: 50px;
-  background-image: url("assets/dino.png");
+  left: 7%;
+  width: 6%;
+  aspect-ratio: 1/1;
+  background-image: url("assets/pacman.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -86,8 +91,8 @@ p {
 .obstacle {
   position: absolute;
   bottom: 0;
-  width: 50px;
-  height: 50px;
+  width: 6%;
+  aspect-ratio: 1/1;
   z-index: 15;
 }
 .obstacle img {
@@ -104,4 +109,37 @@ p {
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
   z-index: 10;
   position: relative;
+}
+
+/* Медіа-запити для мобільних екранів */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  p {
+    font-size: 1rem;
+  }
+  #pacman {
+    left: 8%;
+    width: 10%;
+  }
+  .obstacle {
+    width: 10%;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  p {
+    font-size: 0.9rem;
+  }
+  #pacman {
+    left: 10%;
+    width: 12%;
+  }
+  .obstacle {
+    width: 12%;
+  }
 }

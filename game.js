@@ -17,52 +17,89 @@ const obstaclesList = [
 // Кешування зображень
 obstaclesList.forEach((src) => (new Image().src = src));
 
+// Функція для отримання адаптивної максимальної висоти стрибка
+function getMaxJump() {
+  const width = window.innerWidth;
+  if (width <= 375) return game.offsetHeight * 0.55;
+  if (width <= 678) return game.offsetHeight * 0.6;
+  return game.offsetHeight * 0.65;
+}
+
+// Адаптивний розмір Pacman
+function updatePacmanSize() {
+  const width = window.innerWidth;
+  let pacWidth;
+  if (width <= 375) pacWidth = game.offsetWidth * 0.08;
+  else if (width <= 678) pacWidth = game.offsetWidth * 0.07;
+  else pacWidth = game.offsetWidth * 0.06;
+
+  pacman.style.width = `${pacWidth}px`;
+  pacman.style.height = `${pacWidth}px`;
+}
+
+function getObstacleSize() {
+  const width = window.innerWidth;
+  if (width <= 375) return game.offsetWidth * 0.08;
+  if (width <= 678) return game.offsetWidth * 0.07;
+  return game.offsetWidth * 0.06;
+}
+
+// Стартове оновлення розмірів
+updatePacmanSize();
+window.addEventListener("resize", () => {
+  updatePacmanSize();
+});
+
 function jump() {
   if (isJumping) return;
   isJumping = true;
 
-  const maxHeight = 200;
-  const upSpeed = 15;
-  const downSpeed = 12;
+  const maxHeight = getMaxJump();
+  const upSpeed = maxHeight / 20;
+  const downSpeed = maxHeight / 18;
 
-  const upInterval = setInterval(() => {
-    pacmanPosition += upSpeed;
-    if (pacmanPosition >= maxHeight) {
-      clearInterval(upInterval);
-      const downInterval = setInterval(() => {
-        pacmanPosition -= downSpeed;
-        if (pacmanPosition <= 0) {
-          pacmanPosition = 0;
-          clearInterval(downInterval);
-          isJumping = false;
-        }
-        pacman.style.bottom = pacmanPosition + "px";
-      }, 20);
+  let goingUp = true;
+
+  const move = () => {
+    if (goingUp) {
+      pacmanPosition += upSpeed;
+      if (pacmanPosition >= maxHeight) goingUp = false;
     } else {
-      pacman.style.bottom = pacmanPosition + "px";
+      pacmanPosition -= downSpeed;
+      if (pacmanPosition <= 0) {
+        pacmanPosition = 0;
+        isJumping = false;
+        pacman.style.bottom = `${pacmanPosition}px`;
+        return;
+      }
     }
-  }, 20);
+    pacman.style.bottom = `${pacmanPosition}px`;
+    requestAnimationFrame(move);
+  };
+
+  requestAnimationFrame(move);
 }
 
 // Масив активних перешкод
 let activeObstacles = [];
 
 function createObstacle() {
-  if (activeObstacles.length >= 4) return; // максимум 4 одночасно
+  if (activeObstacles.length >= 4) return;
 
   const obstacle = document.createElement("div");
   obstacle.classList.add("obstacle");
 
-  // Випадкова картинка
   const randomIndex = Math.floor(Math.random() * obstaclesList.length);
   obstacle.style.backgroundImage = `url(${obstaclesList[randomIndex]})`;
   obstacle.style.backgroundSize = "contain";
   obstacle.style.backgroundRepeat = "no-repeat";
   obstacle.style.backgroundPosition = "center";
+
+  const obsSize = getObstacleSize();
+  obstacle.style.width = `${obsSize}px`;
+  obstacle.style.height = `${obsSize}px`;
   obstacle.style.position = "absolute";
   obstacle.style.bottom = "0px";
-  obstacle.style.width = "50px";
-  obstacle.style.height = "50px";
 
   game.appendChild(obstacle);
   activeObstacles.push(obstacle);
@@ -70,19 +107,31 @@ function createObstacle() {
   let posX = game.offsetWidth;
 
   const moveObstacle = () => {
-    const speed = Math.min(5 + score * 0.3, 14);
+    const width = window.innerWidth;
+    let speed = Math.min(5 + score * 0.3, 14);
+    if (width <= 375) speed *= 0.7;
+    else if (width <= 678) speed *= 0.85;
+
     posX -= speed;
     obstacle.style.transform = `translateX(${posX}px)`;
 
     // Зіткнення
-    if (posX > 60 && posX < 110 && pacmanPosition < 50) {
+    const pacWidth = pacman.offsetWidth;
+    const pacHeight = pacman.offsetHeight;
+    const obsWidth = obstacle.offsetWidth;
+    const obsHeight = obstacle.offsetHeight;
+
+    if (
+      posX < pacman.offsetLeft + pacWidth &&
+      posX + obsWidth > pacman.offsetLeft &&
+      pacmanPosition < obsHeight
+    ) {
       alert(`Game Over! 🟡 Рахунок: ${score}`);
       resetGame();
       return;
     }
 
-    // Перешкода вийшла за екран
-    if (posX < -50) {
+    if (posX < -obsWidth) {
       obstacle.remove();
       activeObstacles = activeObstacles.filter((o) => o !== obstacle);
       score++;
@@ -95,7 +144,6 @@ function createObstacle() {
 
   requestAnimationFrame(moveObstacle);
 
-  // Наступна перешкода
   const minTime = 800;
   const maxTime = 2200;
   setTimeout(createObstacle, Math.random() * (maxTime - minTime) + minTime);
@@ -110,9 +158,15 @@ function resetGame() {
   pacman.style.bottom = pacmanPosition + "px";
 }
 
-// Перша перешкода
+// Старт першої перешкоди
 createObstacle();
 
+// Клавіатура
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") jump();
+});
+
+// Тач для мобільних
+document.addEventListener("touchstart", () => {
+  jump();
 });
