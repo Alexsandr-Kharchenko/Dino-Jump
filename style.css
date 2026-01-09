@@ -1,49 +1,108 @@
+/* Загальні стилі */
 body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  height: 100vh;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #e0f7fa;
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(
+    to bottom,
+    #0f2027,
+    #203a43,
+    #2c5364
+  ); /* сучасний градієнт */
+  color: #fff;
   overflow: hidden;
+  height: 100vh;
 }
 
+/* Додаємо легкі зірки на фон */
+body::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url("/assets/star.jpg") no-repeat center center;
+  background-size: cover;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  opacity: 0.3;
+  pointer-events: none;
+}
+/* Заголовок */
 h1 {
-  margin-top: 20px;
+  margin-top: 30px;
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+
+  /* Градієнтний текст */
+  background: linear-gradient(90deg, #ffeb3b, #ff9800, #f44336);
+
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  /* Тінь для контрасту з фоном */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+/* Інструкції та рахунок */
+p {
+  font-size: 1.2rem;
+  margin: 5px 0;
 }
 
+/* Контейнер гри */
 #game {
   position: relative;
-  width: 600px;
-  height: 200px;
-  background: linear-gradient(to top, #80deea 0%, #ffffff 100%);
-  border: 2px solid #333;
+  width: 800px;
+  height: 300px;
   overflow: hidden;
+  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.6); /* напівпрозорий сучасний фон */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
   margin-top: 20px;
+  border: 2px solid #ffeb3b;
+  backdrop-filter: blur(5px); /* розмиття фону за контейнером */
+  z-index: 1;
 }
 
-#dino {
+/* Pacman - твоя картинка */
+#pacman {
   position: absolute;
   bottom: 0;
-  left: 50px;
+  left: 60px;
   width: 50px;
-  transition: bottom 0.1s;
+  height: 50px;
+  background-image: url("/assets/dino.png"); /* твій PNG */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 10;
+  transition: bottom 0.1s linear; /* плавніший рух */
 }
 
+/* Перешкоди */
 .obstacle {
   position: absolute;
   bottom: 0;
-  width: 25px;
+  width: 50px;
   height: 50px;
+  background-image: url("/assets/cactus.png"); /* твій PNG */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 5;
+  transition: left 0.02s linear;
 }
 
-@keyframes moveObstacle {
-  from {
-    right: -25px;
-  }
-  to {
-    right: 625px;
-  }
+/* Рахунок */
+#score {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #ffeb3b;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
 }
